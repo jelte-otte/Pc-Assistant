@@ -1,0 +1,7 @@
+apps/
+contacts/
+credentials/
+hierTestenWij/
+.env
+
+*/__pycache__/
