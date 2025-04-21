@@ -1,6 +1,6 @@
 from app_functions.get_apps import get_installed_apps
 from app_functions.open_app import open_requested_app
-from hierTestenWij.test_whatsapp_message import send_whatsapp_message
+from messaging_functions.send_whatsapp_message import send_whatsapp_message
 from messaging_functions.get_contacts import get_contacts
 from messaging_functions.send_email import send_email
 from messaging_functions.get_phone_number import get_contact_phone_number
