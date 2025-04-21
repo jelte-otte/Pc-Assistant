@@ -16,7 +16,7 @@ def find_best_match(apps, user_input):
     best_match = None
     highest_score = 0
     for app_name in apps:
-        score = fuzz.partial_ratio(user_input.lower(), app_name.lower())
+        score = fuzz.ratio(user_input.lower(), app_name.lower())
         if score > highest_score:
             highest_score = score
             best_match = app_name
