@@ -1,6 +1,5 @@
 import json
 import os
-import csv
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
