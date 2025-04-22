@@ -88,18 +88,21 @@ def get_uwp_apps():
     uwp_apps = {}
     try:
         output = subprocess.check_output(
-            ['powershell', '-Command', '''
-            $apps = Get-AppxPackage
-            foreach ($app in $apps) {
-                $manifest = Get-AppxPackageManifest $app
-                foreach ($id in $manifest.Package.Applications.Application.Id) {
-                    "$($app.Name) = $($app.PackageFamilyName)!$id"
+            [
+                "powershell",
+                "-Command",
+                """
+                $ErrorActionPreference = 'SilentlyContinue'
+                $apps = Get-StartApps
+                foreach ($app in $apps) {
+                    "$($app.Name) = $($app.AppID)"
                 }
-            }
-            '''],
+                """
+            ],
             stderr=subprocess.DEVNULL,
             text=True
         )
+
         for line in output.strip().split('\n'):
             if '=' in line:
                 name, aumid = line.strip().split('=', 1)
@@ -107,6 +110,7 @@ def get_uwp_apps():
     except Exception as e:
         print(f"Fout bij het ophalen van UWP-apps: {e}")
     return uwp_apps
+
 
 if __name__ == "__main__":
     get_installed_apps()
