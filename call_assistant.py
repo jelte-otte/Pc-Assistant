@@ -9,8 +9,14 @@ from messaging_functions.get_phone_number import get_contact_phone_number
 
 
 get_installed_apps()
-get_installed_games()
-merge_installed_apps_with_steam_ids()
+try:
+    get_installed_games()
+except Exception as e:
+    print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
+try:
+    merge_installed_apps_with_steam_ids()
+except Exception as e:
+    print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
 get_contacts()
 
 def open_app(keyword):
