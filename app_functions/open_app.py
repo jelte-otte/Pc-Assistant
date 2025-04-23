@@ -57,15 +57,12 @@ def open_requested_app():
 
     if best_match:
         if apps[best_match].startswith("S:"):
-            steamLink = apps["Steam"]
+            steamLink = os.getenv("STEAM_PATH")
             steam_id = apps[best_match].replace("S:", "")
-            command = [
-                "start", "",
-               f"{steamLink}", 
-                "-applaunch", steam_id,
-            ]
-            print(command)
-            subprocess.run(command, shell=True)
+            command_str = f'"{steamLink}" -applaunch {steam_id}'
+            print(command_str)
+            subprocess.run(command_str, shell=True)
+
             return
         if best_match == "Prism Launcher":
             version = input("welke versie?")
