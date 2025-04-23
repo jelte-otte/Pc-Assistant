@@ -26,7 +26,7 @@ def get_steam_game_ids(steam_library_path):
     return steam_game_ids
 
 def get_installed_games():
-    steam_library_path = "C:\\Program Files (x86)\\Steam"  # Pas aan indien nodig
+    steam_library_path = os.getenv("STEAM_PATH")
     installed_steam_games = get_steam_game_ids(steam_library_path)
 
     os.makedirs("apps", exist_ok=True)
