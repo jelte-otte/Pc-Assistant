@@ -57,7 +57,7 @@ def open_requested_app():
 
     if best_match:
         if apps[best_match].startswith("S:"):
-            steamLink = os.getenv("STEAM_PATH")
+            steamLink = os.getenv("STEAM_PATH") + "//Steam.exe"
             steam_id = apps[best_match].replace("S:", "")
             command_str = f'"{steamLink}" -applaunch {steam_id}'
             print(command_str)
