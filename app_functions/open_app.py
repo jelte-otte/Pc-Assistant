@@ -17,7 +17,7 @@ def find_best_match(apps, user_input):
     best_match = None
     highest_score = 0
     for app_name in apps:
-        score = fuzz.partial_ratio(user_input.lower(), app_name.lower())
+        score = fuzz.ratio(user_input.lower(), app_name.lower())
         if score > highest_score:
             highest_score = score
             best_match = app_name
@@ -57,16 +57,12 @@ def open_requested_app():
 
     if best_match:
         if apps[best_match].startswith("S:"):
-            steamLink = apps["Steam"]
-            steamLink = os.getenv("STEAM_PATH") + "//Steam.exe"
+            steamLink = os.getenv("STEAM_PATH")
             steam_id = apps[best_match].replace("S:", "")
-            command = [
-                "start", "",
-               f"{steamLink}", 
-                "-applaunch", steam_id,
-            ]
-            print(command)
-            subprocess.run(command, shell=True)
+            command_str = f'"{steamLink}" -applaunch {steam_id}'
+            print(command_str)
+            subprocess.run(command_str, shell=True)
+
             return
         if best_match == "Prism Launcher":
             version = input("welke versie?")
