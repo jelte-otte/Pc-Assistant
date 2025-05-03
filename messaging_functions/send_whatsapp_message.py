@@ -47,7 +47,7 @@ def send_whatsapp_message(phone_number, message, device_id=None, connectivity_me
         print("Fout bij openen van WhatsApp:", e)
         return
 
-    time.sleep(2)
+    time.sleep(2.3)
 
     # Simuleer Enter
     send_cmd = ["adb"]
