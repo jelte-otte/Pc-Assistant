@@ -17,7 +17,10 @@ try:
     merge_installed_apps_with_steam_ids()
 except Exception as e:
     print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
-get_contacts()
+try:
+    get_contacts()
+except Exception as e:
+    print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
 
 def open_app(keyword):
     if keyword == "open":
