@@ -1,9 +1,9 @@
 import os
 import subprocess
 import time
-from messaging_functions.connect_to_phone import connect_adb_wirelessly
-from messaging_functions.connect_to_phone import connect_adb_via_usb
-from messaging_functions.unlock_phone import unlock_device
+from messaging_functions.whatsapp.connect_to_phone import connect_adb_wirelessly
+from messaging_functions.whatsapp.connect_to_phone import connect_adb_via_usb
+from messaging_functions.whatsapp.unlock_phone import unlock_device
 
 
 def send_whatsapp_message(phone_number, message, device_id=None, connectivity_method=os.getenv('CONNECTIVITY_METHOD')):
