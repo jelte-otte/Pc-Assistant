@@ -95,15 +95,7 @@ try:
     )
     message_box.click()
     time.sleep(0.3)
-    message_box.send_keys(message)
-    time.sleep(0.5)
-
-    # Wacht op de knop en klik via JS
-    send_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Send"]'))
-    )
-    driver.execute_script("arguments[0].click();", send_button)
-
+    message_box.send_keys(message + Keys.ENTER)
     print(f"Bericht verzonden naar {contact['name']}.")
     time.sleep(5)
 except Exception as e:
