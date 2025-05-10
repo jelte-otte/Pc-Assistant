@@ -106,7 +106,12 @@ def get_uwp_apps():
         for line in output.strip().split('\n'):
             if '=' in line:
                 name, aumid = line.strip().split('=', 1)
-                uwp_apps[name.strip()] = f"shell:AppsFolder\\{aumid.strip()}"
+                cleaned_aumid = aumid.strip()
+                if os.path.exists(cleaned_aumid) or cleaned_aumid.startswith("C:\\") or ":" in cleaned_aumid:
+                    uwp_apps[name.strip()] = cleaned_aumid
+                else:
+                    uwp_apps[name.strip()] = f"shell:AppsFolder\\{cleaned_aumid}"
+
     except Exception as e:
         print(f"Fout bij het ophalen van UWP-apps: {e}")
     return uwp_apps
