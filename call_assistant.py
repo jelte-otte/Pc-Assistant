@@ -8,10 +8,20 @@ from messaging_functions.get_phone_number import get_contact_phone_number
 from messaging_functions.whatsapp.send_whatsapp_message import send_whatsapp_message
 
 
+
 get_installed_apps()
-get_installed_games()
-merge_installed_apps_with_steam_ids()
-get_contacts()
+try:
+    get_installed_games()
+except Exception as e:
+    print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
+try:
+    merge_installed_apps_with_steam_ids()
+except Exception as e:
+    print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
+try:
+    get_contacts()
+except Exception as e:
+    print(f"Er is een fout opgetreden bij het ophalen van geïnstalleerde games: {e}")
 
 def open_app(keyword):
     if keyword == "open":
