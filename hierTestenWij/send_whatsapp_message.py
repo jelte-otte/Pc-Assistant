@@ -19,7 +19,8 @@ contacts_path = os.getenv("CONTACTS_FILE_PATH")
 # === Hulpfuncties ===
 def start_driver(headless: bool) -> webdriver.Chrome:
     options = Options()
-    options.headless = headless
+    if headless:
+        options.add_argument("--headless=new")
     options.add_argument(f"--user-data-dir={SESSION_DIR}")
     options.add_argument("--profile-directory=Default")
     return webdriver.Chrome(options=options)
@@ -48,10 +49,11 @@ def wait_until_qr_scanned(driver: webdriver.Chrome):
         f.write("initialized")
     time.sleep(5)
 
-def safe_start(headless: bool) -> webdriver.Chrome:
+def safe_start(headless: bool, initial_url: str = "https://web.whatsapp.com") -> webdriver.Chrome:
     d = start_driver(headless)
-    d.get("https://web.whatsapp.com")
+    d.get(initial_url)
     return d
+
 
 # === Contactgegevens laden ===
 if not contacts_path or not os.path.exists(contacts_path):
@@ -73,17 +75,18 @@ message = f"Hallo {contact['name']}, dit is een automatisch bericht."
 
 # === WhatsApp Web Sessiebeheer ===
 first_time = not os.path.exists(SESSION_FLAG)
+chat_url = f"https://web.whatsapp.com/send?phone={phone_number.replace('+', '')}"
 
 if first_time:
     print("Eerste keer: QR vereist. Start niet-headless.")
-    driver = safe_start(headless=False)
+    driver = safe_start(headless=False)  # QR moet zonder chat-URL
     time.sleep(5)
     wait_until_qr_scanned(driver)
     driver.quit()
-    print("QR gescand. Herstart in headless-modus.")
-    driver = safe_start(headless=True)
+    print("QR gescand. Herstart in headless-modus met chat.")
+    driver = safe_start(headless=True, initial_url=chat_url)
 else:
-    driver = safe_start(headless=True)
+    driver = safe_start(headless=True, initial_url=chat_url)
     time.sleep(10)
     if qr_code_present(driver):
         print("Sessie verlopen. Herstart in GUI-modus voor QR-scan.")
@@ -94,11 +97,11 @@ else:
         time.sleep(5)
         wait_until_qr_scanned(driver)
         driver.quit()
-        print("QR opnieuw gescand. Herstart in headless-modus.")
-        driver = safe_start(headless=True)
+        print("QR opnieuw gescand. Herstart in headless-modus met chat.")
+        driver = safe_start(headless=True, initial_url=chat_url)
+
 
 # === Bericht versturen ===
-chat_url = f"https://web.whatsapp.com/send?phone={phone_number.replace('+', '')}"
 driver.get(chat_url)
 
 try:
