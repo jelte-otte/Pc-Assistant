@@ -12,20 +12,7 @@ def send_whatsapp_message(phone_number, message, device_id=None, connectivity_me
         connect_adb_wirelessly(os.getenv('PHONE_IP'))
     elif connectivity_method == "usb":
         device_id = connect_adb_via_usb(os.getenv('DEVICE_ID'))
-    
-    # Controleer of scherm vergrendeld is
-    check_cmd = ["adb"]
-    if device_id:
-        check_cmd += ["-s", device_id]
-    check_cmd += ["shell", "dumpsys", "window"]
 
-    try:
-        output = subprocess.check_output(check_cmd, encoding='utf-8')
-        if "mDreamingLockscreen=true" in output:
-            unlock_device(device_id)
-    except subprocess.CalledProcessError as e:
-        print("Fout bij controleren vergrendeling:", e)
-        return
 
     # Open WhatsApp met bericht
     message_encoded = message.replace(" ", "%20")
@@ -46,8 +33,22 @@ def send_whatsapp_message(phone_number, message, device_id=None, connectivity_me
     except subprocess.CalledProcessError as e:
         print("Fout bij openen van WhatsApp:", e)
         return
+    
+    # Controleer of scherm vergrendeld is
+    check_cmd = ["adb"]
+    if device_id:
+        check_cmd += ["-s", device_id]
+    check_cmd += ["shell", "dumpsys", "window"]
 
-    time.sleep(2)
+    try:
+        output = subprocess.check_output(check_cmd, encoding='utf-8')
+        if "mDreamingLockscreen=true" in output:
+            unlock_device(device_id)
+    except subprocess.CalledProcessError as e:
+        print("Fout bij controleren vergrendeling:", e)
+        return
+
+    time.sleep(2.3)
 
     # Simuleer Enter
     send_cmd = ["adb"]
