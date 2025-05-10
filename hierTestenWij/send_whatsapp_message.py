@@ -33,12 +33,25 @@ def qr_code_present(driver: webdriver.Chrome) -> bool:
 
 def wait_until_qr_scanned(driver: webdriver.Chrome):
     print("Wachten tot QR-code gescand is...")
+    max_wait = 180  # timeout in seconden
+    start_time = time.time()
     while qr_code_present(driver):
+        if time.time() - start_time > max_wait:
+            print("Timeout: QR-code werd niet gescand binnen de tijd.")
+            driver.quit()
+            if os.path.exists(SESSION_FLAG):
+                os.remove(SESSION_FLAG)
+            exit(1)
         time.sleep(2)
     print("QR-code succesvol gescand.")
     with open(SESSION_FLAG, "w") as f:
         f.write("initialized")
     time.sleep(5)
+
+def safe_start(headless: bool) -> webdriver.Chrome:
+    d = start_driver(headless)
+    d.get("https://web.whatsapp.com")
+    return d
 
 # === Contactgegevens laden ===
 if not contacts_path or not os.path.exists(contacts_path):
@@ -60,30 +73,29 @@ message = f"Hallo {contact['name']}, dit is een automatisch bericht."
 
 # === WhatsApp Web Sessiebeheer ===
 first_time = not os.path.exists(SESSION_FLAG)
-driver = None
 
 if first_time:
-    driver = start_driver(headless=False)
-    driver.get("https://web.whatsapp.com")
+    print("Eerste keer: QR vereist. Start niet-headless.")
+    driver = safe_start(headless=False)
     time.sleep(5)
     wait_until_qr_scanned(driver)
     driver.quit()
-    driver = start_driver(headless=True)
+    print("QR gescand. Herstart in headless-modus.")
+    driver = safe_start(headless=True)
 else:
-    driver = start_driver(headless=True)
-    driver.get("https://web.whatsapp.com")
+    driver = safe_start(headless=True)
     time.sleep(10)
     if qr_code_present(driver):
-        print("Sessie verlopen. QR vereist. Herstart in GUI-modus.")
+        print("Sessie verlopen. Herstart in GUI-modus voor QR-scan.")
         driver.quit()
         if os.path.exists(SESSION_FLAG):
             os.remove(SESSION_FLAG)
-        driver = start_driver(headless=False)
-        driver.get("https://web.whatsapp.com")
+        driver = safe_start(headless=False)
         time.sleep(5)
         wait_until_qr_scanned(driver)
         driver.quit()
-        driver = start_driver(headless=True)
+        print("QR opnieuw gescand. Herstart in headless-modus.")
+        driver = safe_start(headless=True)
 
 # === Bericht versturen ===
 chat_url = f"https://web.whatsapp.com/send?phone={phone_number.replace('+', '')}"
@@ -95,16 +107,10 @@ try:
     )
     message_box.click()
     time.sleep(0.3)
-    message_box.send_keys(message)
-    time.sleep(0.5)
-
-    # Wacht op de knop en klik via JS
-    send_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, '//button[@aria-label="Send"]'))
-    )
-    driver.execute_script("arguments[0].click();", send_button)
-
+    message_box.send_keys(message + Keys.ENTER)
     print(f"Bericht verzonden naar {contact['name']}.")
     time.sleep(5)
 except Exception as e:
     print(f"Fout bij invoeren of verzenden: {e}")
+
+driver.quit()
