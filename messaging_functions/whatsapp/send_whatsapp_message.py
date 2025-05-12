@@ -54,9 +54,6 @@ def safe_start(headless: bool, initial_url: str = "https://web.whatsapp.com") ->
     d.get(initial_url)
     return d
 
-
-
-
 def send_whatsapp_message(phone_number: str, message: str):
     
     # === WhatsApp Web Sessiebeheer ===

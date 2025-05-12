@@ -1,5 +1,6 @@
-apps/
-contacts/
+apps/installed_apps.json
+apps/steam_game_ids.json
+contacts/*
 credentials/
 .env
 .vscode/

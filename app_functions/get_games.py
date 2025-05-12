@@ -29,7 +29,6 @@ def get_installed_games():
     steam_library_path = os.getenv("STEAM_PATH")
     installed_steam_games = get_steam_game_ids(steam_library_path)
 
-    os.makedirs("apps", exist_ok=True)
     with open(os.path.join("apps", "steam_game_ids.json"), "w", encoding="utf-8") as f:
         json.dump(installed_steam_games, f, indent=2, ensure_ascii=False)
 
