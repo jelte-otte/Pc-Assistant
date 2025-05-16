@@ -2,7 +2,6 @@ from app_functions.get_apps import get_installed_apps
 from app_functions.get_games import get_installed_games
 from app_functions.open_app import open_requested_app
 from app_functions.merge_installed_apps_with_steam_ids import merge_installed_apps_with_steam_ids
-from deprecated_functions.get_contacts import get_contacts
 from messaging_functions.mail.send_email import send_email
 from messaging_functions.get_phone_number import get_contact_phone_number
 from messaging_functions.whatsapp.send_whatsapp_message import send_whatsapp_message

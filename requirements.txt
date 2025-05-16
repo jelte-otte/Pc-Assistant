@@ -7,3 +7,4 @@ pywin32==306
 selenium==4.32.0
 speechrecognition==3.14.2
 python-levenshtein
+vobject
