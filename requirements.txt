@@ -5,5 +5,7 @@ protobuf==6.31.0
 python-dotenv==1.1.0
 pywin32==306
 selenium==4.32.0
+pywin32==306
+selenium==4.32.0
 speechrecognition==3.14.2
 vobject==0.9.9
