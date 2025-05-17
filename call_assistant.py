@@ -7,6 +7,7 @@ from messaging_functions.get_phone_number import get_contact_phone_number
 from messaging_functions.whatsapp.send_whatsapp_message import send_whatsapp_message
 from spotify_functions.spotify_controller import main as spotify_main
 
+get_installed_apps()
 try:
     get_installed_games()
 except Exception as e:
