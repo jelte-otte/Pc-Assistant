@@ -2,8 +2,22 @@ import os
 import socket
 import subprocess
 import time
+from spotipy import Spotify
+from spotipy.oauth2 import SpotifyOAuth
+from dotenv import load_dotenv
 from fuzzywuzzy import fuzz
 import json
+
+load_dotenv()
+spotify_client_id = os.getenv('SPOTIFY_CLIENT_ID')
+spotify_client_secret = os.getenv('SPOTIFY_CLIENT_SECRET')
+
+sp = Spotify(auth_manager=SpotifyOAuth(
+    client_id=spotify_client_id,
+    client_secret=spotify_client_secret,
+    redirect_uri="http://127.0.0.1:8888/callback",
+    scope="user-modify-playback-state user-read-playback-state playlist-read-private"
+))
 
 # Jouw bestaande open_app functies
 def load_apps():
@@ -43,6 +57,75 @@ def open_app(path_or_cmd):
                 subprocess.Popen(os.path.join(path_or_cmd, file))
                 return True
     return False
+
+# Functie om Spotify te openen met jouw open_app
+def open_spotify_app():
+    try:
+        apps = load_apps()
+        if not apps:
+            print("Geen apps geladen. Kan Spotify niet openen.")
+            return False
+        best_match = find_best_match(apps, "Spotify")
+        if best_match:
+            print("Opening Spotify...")
+            success = open_app(apps[best_match])
+            if success:
+                time.sleep(5)  # Wacht even zodat Spotify kan opstarten
+                return True
+            else:
+                print("Kon Spotify niet openen.")
+                return False
+        else:
+            print("Spotify niet gevonden in de lijst van apps.")
+            return False
+    except Exception as e:
+        print(f"Error while opening Spotify: {e}")
+        return False
+
+# Functie om een actief apparaat te vinden of te activeren, met voorkeur voor de huidige pc
+def ensure_active_device(sp):
+    try:
+        # Haal de naam van de huidige pc op
+        pc_name = socket.gethostname().lower()
+        print(f"PC name: {pc_name}")
+        
+        devices = sp.devices()
+        if not devices or not devices.get('devices'):
+            print("No devices found. Trying to open Spotify...")
+            if not open_spotify_app():
+                return None
+            devices = sp.devices()
+        
+        pc_device = None
+        for device in devices.get('devices', []):
+            device_name = device['name'].lower()
+            # Zoek naar een apparaat dat overeenkomt met de pc-naam
+            if device_name == pc_name or fuzz.ratio(device_name, pc_name) >= 90:
+                pc_device = device['id']
+                break
+        
+        if not pc_device:
+            print("No device matching PC name found. Trying to open Spotify and retry...")
+            if not open_spotify_app():
+                return None
+            devices = sp.devices()
+            for device in devices.get('devices', []):
+                device_name = device['name'].lower()
+                if device_name == pc_name or fuzz.ratio(device_name, pc_name) >= 90:
+                    pc_device = device['id']
+                    break
+        
+        if pc_device:
+            print(f"Activating PC device: {pc_device}")
+            sp.transfer_playback(device_id=pc_device, force_play=False)
+            time.sleep(1)  # Geef tijd om te activeren
+            return pc_device
+        
+        print("No devices available or PC device not found. Please ensure Spotify is open.")
+        return None
+    except Exception as e:
+        print(f"Error while checking/activating device: {e}")
+        return None
 
 # Algemene zoekfunctie voor hergebruik
 def search_spotify_item(sp, query, search_type, exact=True, match_threshold=80):
@@ -145,3 +228,31 @@ def play_song(sp, song_name, device_id, match_threshold=80):
     print(f"No song found for the name '{song_name}'")
     return False
 
+# Hoofdlogica
+try:
+    action = input("Do you want to play a playlist or a song? (playlist/song): ").strip().lower()
+    if action not in ['playlist', 'song']:
+        print("Invalid action. Please choose 'playlist' or 'song'.")
+        exit(1)
+    
+    name = input(f"Put here the name of the {action}: ").strip()
+    if not name:
+        print(f"No {action} name submitted.")
+        exit(1)
+        
+    match_threshold = 80  # Stel hier het gewenste percentage in (0-100)
+
+    # Zorg ervoor dat er een actief apparaat is
+    device_id = ensure_active_device(sp)
+    if not device_id:
+        print("Cannot activate a device. Script stopped.")
+        exit(1)
+
+    # Voer de juiste actie uit
+    if action == 'playlist':
+        play_playlist(sp, name, device_id, match_threshold)
+    else:  # action == 'song'
+        play_song(sp, name, device_id, match_threshold)
+
+except Exception as e:
+    print(f"General error: {e}")
