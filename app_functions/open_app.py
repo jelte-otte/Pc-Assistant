@@ -42,7 +42,7 @@ def open_app(path_or_cmd):
                 return True
     return False
 
-def open_requested_app():
+def open_app():
     apps = load_apps()
     if not apps:
         return
@@ -74,4 +74,4 @@ def open_requested_app():
         print("Geen overeenkomst gevonden.")
 
 if __name__ == "__main__":
-    open_requested_app()
+    open_app()

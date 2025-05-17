@@ -1,9 +1,9 @@
 fuzzywuzzy==0.18.0
 google_api_python_client==2.167.0
 google_auth_oauthlib==1.2.1
-protobuf==6.30.2
+protobuf==6.31.0
 python-dotenv==1.1.0
 pywin32==306
 selenium==4.32.0
 speechrecognition==3.14.2
-python-levenshtein
+vobject==0.9.9
