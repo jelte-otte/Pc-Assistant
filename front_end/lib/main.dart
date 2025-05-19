@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/theme/light_theme.dart';
+import 'package:frontend/theme/dark_theme.dart';
+import 'package:frontend/views/home_page.dart';
+import 'package:frontend/notifiers/theme_notifier.dart';
+
+final themeNotifier = ThemeNotifier();
 
 void main() {
   runApp(const MyApp());
@@ -8,14 +13,15 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: lightTheme,
-      themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: darkTheme,
+      themeMode: ThemeMode.light,
+      home: const HomePage(),
     );
   }
 }
