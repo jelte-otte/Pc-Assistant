@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/drawer.dart';
-import 'package:frontend/widgets/settings.dart';
+import 'package:pc_assistant/utils/load_nickname.dart';
+import 'package:pc_assistant/widgets/drawer.dart';
+import 'package:pc_assistant/widgets/nickname_input.dart';
+import 'package:pc_assistant/widgets/settings.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final bool openNicknameInput;
+  const HomePage({super.key, this.openNicknameInput = false});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  String username = 'Jelte';
+  String nickname = '';
   bool isPressed = false;
   @override
   void initState() {
     super.initState();
+    loadNickname().then((storedNickname) {
+      setState(() {
+        nickname = storedNickname;
+      });
+    });
+    if (widget.openNicknameInput) {
+      Future.microtask(() async {
+        final newNickname = await showDialog<String>(
+          context: context,
+          builder: (context) => const NicknameInput(),
+          barrierDismissible: false,
+        );
+        if (newNickname != null && mounted) {
+          setState(() {
+            nickname = newNickname;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -24,7 +46,6 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Stack(
           children: [
-            // Linker icoon (menu)
             Positioned(
               top: 8,
               left: 8,
@@ -40,18 +61,21 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-
-            // Rechter icoon (instellingen)
             Positioned(
               top: 8,
               right: 8,
               child: IconButton(
                 icon: const Icon(Icons.settings),
-                onPressed: () {
-                  showDialog(
+                onPressed: () async {
+                  final updatedNickname = await showDialog<String>(
                     context: context,
-                    builder: (context) => SizedBox(child: Settings()),
+                    builder: (context) => const Settings(),
                   );
+                  if (updatedNickname != null && mounted) {
+                    setState(() {
+                      nickname = updatedNickname;
+                    });
+                  }
                 },
                 iconSize: 40,
               ),
@@ -62,7 +86,7 @@ class _HomePageState extends State<HomePage> {
               right: 0,
               child: Center(
                 child: Text(
-                  'Good to see you $username👋',
+                  '👋 Good to see you $nickname',
                   style: TextStyle(fontSize: 30),
                 ),
               ),
@@ -87,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                                   : Color.fromARGB(146, 158, 158, 158),
                           blurRadius: 7,
                           spreadRadius: 5,
-                          offset: Offset(0, 3), // changes position of shadow
+                          offset: Offset(0, 3),
                         ),
                       ],
                     ),
@@ -123,14 +147,14 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide(
                           color: Color(0xFF5E5E5E),
-                          width: 2, // Realistische waarde
+                          width: 2,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide(
                           color: Color(0xFF5E5E5E),
-                          width: 2.3, // Realistische waarde
+                          width: 2.3,
                         ),
                       ),
                     ),

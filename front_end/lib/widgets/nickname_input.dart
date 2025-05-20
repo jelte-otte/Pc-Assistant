@@ -1,18 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/base_dialog.dart';
+import 'package:pc_assistant/utils/load_nickname.dart';
+import 'package:pc_assistant/utils/save_nickname.dart';
+import 'package:pc_assistant/widgets/base_dialog.dart';
 
-class UsernameInput extends StatefulWidget {
-  const UsernameInput({super.key});
+class NicknameInput extends StatefulWidget {
+  const NicknameInput({super.key});
 
   @override
-  State<UsernameInput> createState() => _UsernameInputState();
+  State<NicknameInput> createState() => _NicknameInputState();
 }
 
-class _UsernameInputState extends State<UsernameInput> {
-  String nickname = "default_nickname";
+class _NicknameInputState extends State<NicknameInput> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+  String nickname = '';
+  String nicknameMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    loadNickname().then((storedNickname) {
+      if (mounted) {
+        setState(() {
+          nickname = storedNickname;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    nicknameMessage =
+        nickname.isEmpty
+            ? 'Please enter a nickname to continue.'
+            : 'Your current nickname is: $nickname';
     return BaseDialog(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -24,7 +52,7 @@ class _UsernameInputState extends State<UsernameInput> {
           ),
           const SizedBox(height: 20),
           Text(
-            "Your current nickname is: $nickname",
+            nicknameMessage,
             style: TextStyle(
               fontSize: 16,
               fontStyle: FontStyle.italic,
@@ -35,7 +63,10 @@ class _UsernameInputState extends State<UsernameInput> {
           SizedBox(
             width: 400,
             child: TextField(
-              decoration: InputDecoration(
+              autofocus: true,
+              focusNode: _focusNode,
+              controller: _controller,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Nickname',
               ),
@@ -46,8 +77,11 @@ class _UsernameInputState extends State<UsernameInput> {
             width: 100,
             height: 50,
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                final newNickname = await saveNickname(_controller, context);
+                if (newNickname != null && context.mounted) {
+                  Navigator.pop(context, newNickname);
+                }
               },
               child: const Text(
                 'Submit',

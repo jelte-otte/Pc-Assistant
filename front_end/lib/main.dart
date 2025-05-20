@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/theme/light_theme.dart';
-import 'package:frontend/theme/dark_theme.dart';
-import 'package:frontend/views/home_page.dart';
-import 'package:frontend/notifiers/theme_notifier.dart';
+import 'package:pc_assistant/notifiers/theme_notifier.dart';
+import 'package:pc_assistant/services/entry_point.dart';
+import 'package:pc_assistant/theme/dark_theme.dart';
+import 'package:pc_assistant/theme/light_theme.dart';
 
 final themeNotifier = ThemeNotifier();
 
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.light,
-      home: const HomePage(),
+      home: EntryPoint(),
     );
   }
 }

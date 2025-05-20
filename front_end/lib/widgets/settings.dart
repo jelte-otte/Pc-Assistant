@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/base_dialog.dart';
-import 'package:frontend/widgets/nickname_input.dart';
+import 'package:pc_assistant/widgets/base_dialog.dart';
+import 'package:pc_assistant/widgets/nickname_input.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -64,12 +64,21 @@ class _SettingsState extends State<Settings> {
           const Divider(),
           ListTile(
             title: const Text('Change Nickname'),
-            onTap: () {
-              Navigator.of(context).pop(); // sluit huidige dialog
-              showDialog(
+            onTap: () async {
+              final newNickname = await showDialog<String>(
                 context: context,
-                builder: (context) => const UsernameInput(),
+                builder: (context) => const NicknameInput(),
               );
+
+              if (newNickname != null && context.mounted) {
+                Navigator.of(
+                  context,
+                ).pop(newNickname); // geef nickname terug aan HomePage
+              } else {
+                if (context.mounted) {
+                  Navigator.of(context).pop(); // gewoon sluiten zonder waarde}
+                }
+              }
             },
           ),
         ],
