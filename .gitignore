@@ -12,24 +12,24 @@ selenium_whatsapp_session
 
 #!flutter related
 # Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+front_end/*.class
+front_end/*.log
+front_end/*.pyc
+front_end/*.swp
+front_end/.DS_Store
+front_end/.atom/
+front_end/.build/
+front_end/.buildlog/
+front_end/.history
+front_end/.svn/
+front_end/.swiftpm/
+front_end/migrate_working_dir/
 
 # IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
+front_end/*.iml
+front_end/*.ipr
+front_end/*.iws
+front_end/.idea/
 
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
@@ -37,22 +37,22 @@ migrate_working_dir/
 #.vscode/
 
 # Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
+front_end/**/doc/api/
+front_end/**/ios/Flutter/.last_build_id
+front_end/.dart_tool/
+front_end/.flutter-plugins
+front_end/.flutter-plugins-dependencies
+front_end/.pub-cache/
+front_end/.pub/
+front_end/build/
 
 # Symbolication related
-app.*.symbols
+front_end/app.*.symbols
 
 # Obfuscation related
-app.*.map.json
+front_end/app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+front_end/android/app/debug
+front_end/android/app/profile
+front_end/android/app/release

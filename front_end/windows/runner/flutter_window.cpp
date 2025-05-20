@@ -1,6 +1,7 @@
 #include "flutter_window.h"
 
 #include <optional>
+#include <string>
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -65,6 +66,29 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
       break;
+    case WM_CHAR: {
+      // Vang toetsaanslagen (tekens) op
+      wchar_t character = static_cast<wchar_t>(wparam);
+      std::wstring char_str(&character, 1);
+      std::string utf8_char;
+      // Reserveer ruimte voor UTF-8 conversie
+      int size = WideCharToMultiByte(CP_UTF8, 0, char_str.c_str(), -1, nullptr, 0, nullptr, nullptr);
+      utf8_char.resize(size);
+      WideCharToMultiByte(CP_UTF8, 0, char_str.c_str(), -1, utf8_char.data(), size, nullptr, nullptr);
+      // Stuur naar Flutter via platform channel
+      flutter_controller_->engine()->messenger()->InvokeMethod(
+          "input.channel", std::make_unique<flutter::EncodableValue>(utf8_char));
+      return 0; // Markeer als afgehandeld
+    }
+    case WM_KEYDOWN: {
+      // Vang speciale toetsen zoals backspace
+      if (wparam == VK_BACK) {
+        flutter_controller_->engine()->messenger()->InvokeMethod(
+            "input.channel", std::make_unique<flutter::EncodableValue>("BACKSPACE"));
+        return 0;
+      }
+      break;
+    }
   }
 
   return Win32Window::MessageHandler(hwnd, message, wparam, lparam);

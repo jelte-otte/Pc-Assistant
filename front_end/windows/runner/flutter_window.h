@@ -15,6 +15,9 @@ class FlutterWindow : public Win32Window {
   explicit FlutterWindow(const flutter::DartProject& project);
   virtual ~FlutterWindow();
 
+  // Getter for the FlutterViewController to access it in main.cpp
+  flutter::FlutterViewController* controller() const { return flutter_controller_.get(); }
+
  protected:
   // Win32Window:
   bool OnCreate() override;
