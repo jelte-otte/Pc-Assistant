@@ -3,6 +3,8 @@
 
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
 
 #include <memory>
 
@@ -11,26 +13,23 @@
 // A window that does nothing but host a Flutter view.
 class FlutterWindow : public Win32Window {
  public:
-  // Creates a new FlutterWindow hosting a Flutter view running |project|.
   explicit FlutterWindow(const flutter::DartProject& project);
   virtual ~FlutterWindow();
-
-  // Getter for the FlutterViewController to access it in main.cpp
   flutter::FlutterViewController* controller() const { return flutter_controller_.get(); }
 
  protected:
-  // Win32Window:
   bool OnCreate() override;
   void OnDestroy() override;
   LRESULT MessageHandler(HWND window, UINT const message, WPARAM const wparam,
                          LPARAM const lparam) noexcept override;
 
  private:
-  // The project to run.
   flutter::DartProject project_;
-
-  // The Flutter instance hosted by this window.
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
+  std::shared_ptr<flutter::MethodChannel<flutter::EncodableValue>> input_channel_;
+  std::shared_ptr<flutter::MethodChannel<flutter::EncodableValue>> focus_channel_;
+  bool isCtrlPressed_ = false;
+  bool isShiftPressed_ = false; // Member voor Shift-status
 };
 
 #endif  // RUNNER_FLUTTER_WINDOW_H_
