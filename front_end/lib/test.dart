@@ -1,50 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:pc_assistant/widgets/custom_text_field.dart';
 
-class Test extends StatelessWidget {
+class Test extends StatefulWidget {
   const Test({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Testing',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Test1()),
-                );
-              },
-              child: Text("PRESS HERE"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<Test> createState() => _TestState();
 }
 
-class Test1 extends StatelessWidget {
-  const Test1({super.key});
+class _TestState extends State<Test> {
+  final _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: const TextField(
-          decoration: InputDecoration(
-            labelText: 'Testing',
-            border: OutlineInputBorder(),
-          ),
-        ),
-      ),
-    );
+    return Scaffold(body: Center(child: NativeInputField(controller: _controller,)));
   }
 }
