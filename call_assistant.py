@@ -46,4 +46,7 @@ while True:
     elif text == "send email":
         send_message(text)
     elif text == "spotify":
-        spotify_main()
+        try:
+            spotify_main()
+        except Exception as e:
+            print(f"Er is een fout opgetreden bij het spelen van een song/playlist op Spotify: {e}")
