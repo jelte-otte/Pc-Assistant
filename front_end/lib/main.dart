@@ -1,13 +1,21 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:pc_assistant/notifiers/theme_notifier.dart';
+import 'package:pc_assistant/python_bridge/python_bridge.dart';
 import 'package:pc_assistant/services/entry_point.dart';
 import 'package:pc_assistant/theme/dark_theme.dart';
 import 'package:pc_assistant/theme/light_theme.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final themeNotifier = ThemeNotifier();
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  log('Starting Python Bridge');
+  final pythonBridge = PythonBridge();
+  await pythonBridge.start();
   runApp(const MyApp());
+  dotenv.load();
 }
 
 class MyApp extends StatelessWidget {

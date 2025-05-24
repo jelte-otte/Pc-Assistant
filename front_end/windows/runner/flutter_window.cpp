@@ -1,10 +1,6 @@
 #include "flutter_window.h"
 
 #include <optional>
-#include <string>
-#include <flutter/method_channel.h>
-#include <flutter/standard_method_codec.h>
-#include <iostream>
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -73,74 +69,7 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
       break;
-    case WM_CHAR: {
-      wchar_t character = static_cast<wchar_t>(wparam);
-      if (character == 8 || (GetAsyncKeyState(VK_CONTROL) & 0x8000) || character == 13) return 0;
-      std::wcout << L"Received WM_CHAR: " << character << std::endl;
-      std::wstring char_str(&character, 1);
-      std::string utf8_char;
-      int size = WideCharToMultiByte(CP_UTF8, 0, char_str.c_str(), 1, nullptr, 0, nullptr, nullptr);
-      utf8_char.resize(size);
-      WideCharToMultiByte(CP_UTF8, 0, char_str.c_str(), 1, utf8_char.data(), size, nullptr, nullptr);
-      if (!utf8_char.empty() && input_channel_) {
-        input_channel_->InvokeMethod("input", std::make_unique<flutter::EncodableValue>(utf8_char));
-      }
-      return 0;
-    }
-    case WM_KEYDOWN: {
-      bool isCtrlPressed = GetAsyncKeyState(VK_CONTROL) & 0x8000;
-      bool isShiftPressed = GetAsyncKeyState(VK_SHIFT) & 0x8000;
-      if (wparam == VK_CONTROL) isCtrlPressed_ = true;
-      if (wparam == VK_SHIFT) isShiftPressed_ = true;
-      if (wparam == VK_BACK) {
-        if (isCtrlPressed) {
-          std::wcout << L"Received Ctrl+Backspace\n";
-          if (input_channel_) {
-            input_channel_->InvokeMethod("input", std::make_unique<flutter::EncodableValue>("CTRL_BACKSPACE"));
-          }
-        } else {
-          std::wcout << L"Received WM_KEYDOWN: VK_BACK\n";
-          if (input_channel_) {
-            input_channel_->InvokeMethod("input", std::make_unique<flutter::EncodableValue>("BACKSPACE"));
-          }
-        }
-        return 0;
-      }
-      if (wparam == VK_RETURN) {
-        if (isShiftPressed) {
-          std::wcout << L"Received Shift+Enter\n";
-          if (input_channel_) {
-            input_channel_->InvokeMethod("input", std::make_unique<flutter::EncodableValue>("SHIFT_ENTER"));
-          }
-        } else {
-          std::wcout << L"Received Enter\n";
-          if (input_channel_) {
-            input_channel_->InvokeMethod("input", std::make_unique<flutter::EncodableValue>("ENTER"));
-          }
-        }
-        return 0;
-      }
-      if (wparam == 0x41 && isCtrlPressed) { // 0x41 is 'A'
-        std::wcout << L"Received Ctrl+A\n";
-        if (input_channel_) {
-          input_channel_->InvokeMethod("input", std::make_unique<flutter::EncodableValue>("SELECT_ALL"));
-        }
-        return 0;
-      }
-      break;
-    }
-    case WM_KEYUP: {
-      if (wparam == VK_CONTROL) isCtrlPressed_ = false;
-      if (wparam == VK_SHIFT) isShiftPressed_ = false;
-      break;
-    }
-    case WM_SETFOCUS: {
-      std::wcout << L"Received WM_SETFOCUS\n";
-      if (input_channel_) {
-        input_channel_->InvokeMethod("focus", std::make_unique<flutter::EncodableValue>(true));
-      }
-      break;
-    }
   }
+
   return Win32Window::MessageHandler(hwnd, message, wparam, lparam);
 }

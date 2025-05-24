@@ -118,6 +118,7 @@ while True:
         sys.stdout.flush()
         continue
 
+
     # Splits input in command en optionele parameters
     parts = line.split(';')
     command = parts[0].lower()
@@ -143,3 +144,4 @@ while True:
     else:
         print(f"Onbekend commando: {line}")
         sys.stdout.flush()
+
