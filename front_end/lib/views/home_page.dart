@@ -3,6 +3,8 @@ import 'package:pc_assistant/utils/load_nickname.dart';
 import 'package:pc_assistant/widgets/drawer.dart';
 import 'package:pc_assistant/widgets/nickname_input.dart';
 import 'package:pc_assistant/widgets/settings.dart';
+import 'dart:convert';
+import 'dart:io';
 
 class HomePage extends StatefulWidget {
   final bool openNicknameInput;
@@ -15,9 +17,16 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String nickname = '';
   bool isPressed = false;
+  final _controller = TextEditingController();
+  final pythonBridge = PythonBridge(); 
   @override
   void initState() {
+    print('Werkdirectory: ${Directory.current.path}');
     super.initState();
+    pythonBridge.start().then((_) {
+    print("Sending test input...");
+    pythonBridge.send("hallo");
+  });
     loadNickname().then((storedNickname) {
       setState(() {
         nickname = storedNickname;
@@ -134,31 +143,37 @@ class _HomePageState extends State<HomePage> {
               left: 0,
               right: 0,
               child: Center(
-                child: SizedBox(
-                  width: 500,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'ask me anything...',
-                      hintStyle: TextStyle(
-                        color: Color(0xFF5E5E5E),
-                        fontSize: 20,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          color: Color(0xFF5E5E5E),
-                          width: 2,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        borderSide: BorderSide(
-                          color: Color(0xFF5E5E5E),
-                          width: 2.3,
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 500,
+                      child: TextField(
+                        controller: _controller,
+                        decoration: InputDecoration(
+                          hintText: 'ask me anything...',
+                          hintStyle: TextStyle(
+                            color: Color(0xFF5E5E5E),
+                            fontSize: 20,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(
+                              color: Color(0xFF5E5E5E),
+                              width: 2,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(
+                              color: Color(0xFF5E5E5E),
+                              width: 2.3,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    IconButton(onPressed: (){pythonBridge.send(_controller.text);}, icon: Icon(Icons.send))
+                  ],
                 ),
               ),
             ), // ),
@@ -166,5 +181,36 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+class PythonBridge {
+  Process? _process;
+  IOSink? _stdin;
+  late Stream<String> _stdoutStream;
+
+  Future<void> start() async {
+    _process = await Process.start(
+      'python3',
+      ['../call_assistant.py'],
+      runInShell: true,
+    );
+    _stdin = _process!.stdin;
+
+    _stdoutStream = _process!.stdout
+        .transform(utf8.decoder)
+        .transform(const LineSplitter());
+
+    _stdoutStream.listen((line) {
+      print("Backend zei: $line");
+    });
+  }
+
+  void send(String text) {
+    _stdin?.writeln(text);
+  }
+
+  void stop() {
+    _process?.kill();
   }
 }
