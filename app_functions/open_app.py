@@ -42,12 +42,11 @@ def open_app(path_or_cmd):
                 return True
     return False
 
-def open_requested_app():
+def open_requested_app(user_input):
     apps = load_apps()
     if not apps:
         return
-
-    user_input = input("Welke app wil je openen? ").strip().lower()
+    
     best_match = find_best_match(apps, user_input)
 
     if best_match:
