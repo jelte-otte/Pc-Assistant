@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pc_assistant/notifiers/theme_notifier.dart';
 import 'package:pc_assistant/python_bridge/python_bridge.dart';
@@ -15,7 +16,6 @@ void main() async {
   final pythonBridge = PythonBridge();
   await pythonBridge.start();
   runApp(const MyApp());
-  dotenv.load();
 }
 
 class MyApp extends StatelessWidget {

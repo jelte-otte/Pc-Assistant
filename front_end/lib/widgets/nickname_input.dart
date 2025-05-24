@@ -95,7 +95,7 @@ class _NicknameInputState extends State<NicknameInput> {
                       _controller,
                       context,
                     );
-                    if (newNickname != null && mounted) {
+                    if (newNickname != null && context.mounted) {
                       Navigator.pop(context, newNickname);
                     }
                   }

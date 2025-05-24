@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class PythonBridge {
   Process? _process;
   IOSink? _stdin;
@@ -11,7 +13,7 @@ class PythonBridge {
     _process = await Process.start(
       'python',
       ['check_for_dangerous_apps.py'],
-      workingDirectory: 'D:/Apps/Pc-Assistant',
+      workingDirectory: dotenv.env['WORKING_DIRECTORY'] ?? '',
       runInShell: true,
     );
     _stdin = _process!.stdin;
